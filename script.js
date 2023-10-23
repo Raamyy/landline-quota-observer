@@ -124,7 +124,7 @@ async function main() {
     let annoynmousToken = await getAnnonymousToken();
     let { jwt, customerId } = await getWEToken(annoynmousToken);
     let { currentUsage, initialTotalAmount } = await getCurrentUsage(jwt, customerId);
-    let now = getDateWithOffset(process.env.TIMEZONE ?? +3);
+    let now = getDateWithOffset(process.env.TIMEZONE == null ? 3: process.env.TIMEZONE);
     let day = now.date(), month = now.month(), year = now.year(), hour = now.hour();
     let text = `${now.toString()}|${currentUsage}/${initialTotalAmount}\n`;
     let filename = `quota-logs/${day}-${month}-${year}.txt`
