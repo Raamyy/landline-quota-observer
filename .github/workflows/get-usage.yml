@@ -1,0 +1,32 @@
+name: Run main sync script
+
+on:
+  push:
+    branches: [ master ]
+  schedule:
+  - cron: "0 0/2 * * *" # run every two hours
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  sync:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 14
+
+    - name: Install node dependencies
+      run: npm i
+
+    - name: Run main sync script
+      run: npm run start
+      env:
+        LANDLINE_NUMBER: ${{secrets.LANDLINE_NUMBER}}
+        HASHED_PASSWORD: ${{secrets.HASHED_PASSWORD}}
+        TIMEZONE: ${{secrets.TIMEZONE}}
