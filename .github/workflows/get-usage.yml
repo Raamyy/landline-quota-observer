@@ -17,9 +17,12 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+      with:
+        token: ${{secrets.GH_WRITE_TOKEN}}
+
     - uses: actions/setup-node@v1
       with:
-        node-version: 14
+        node-version: 16
 
     - name: Install node dependencies
       run: npm i
@@ -30,3 +33,15 @@ jobs:
         LANDLINE_NUMBER: ${{secrets.LANDLINE_NUMBER}}
         HASHED_PASSWORD: ${{secrets.HASHED_PASSWORD}}
         TIMEZONE: ${{secrets.TIMEZONE}}
+
+    - name: Update git configs
+      run: git config --global user.email "quota_observer@Raamyy.com" && git config --global user.name "Quota Observer"
+
+    - name: Add changed files to repo
+      run: git add -A
+
+    - name: Commit files to repo
+      run: git commit -m "update logs"
+    
+    - name: 🚀 push files to repo
+      run: git push
