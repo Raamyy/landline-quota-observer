@@ -1,8 +1,6 @@
 name: Run main sync script
 
 on:
-  push:
-    branches: [ master ]
   schedule:
   - cron: "0 0/2 * * *" # run every two hours
 
