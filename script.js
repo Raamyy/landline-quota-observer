@@ -131,8 +131,7 @@ async function main() {
     fs.appendFileSync(filename, text, { flag: 'a+' });
 
     if(hour == 0) { // new day: append to summary file daily
-        let summaryFileName = `quota-logs/summary.txt`;
-        fs.appendFileSync(summaryFileName, text, { flag: 'a+' });
+        fs.appendFileSync("quota-logs/README.md", "## " + text, { flag: 'a+' });
     }
 }
 
