@@ -3,7 +3,7 @@ name: Run main sync script
 on:
   # workflow_dispatch:
   schedule:
-  - cron: "25 */2 * * *" # run every two hours
+  - cron: "31 */2 * * *" # run every two hours
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
