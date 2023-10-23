@@ -127,11 +127,11 @@ async function main() {
     let now = getDateWithOffset(process.env.TIMEZONE ?? +3);
     let day = now.date(), month = now.month(), year = now.year(), hour = now.hour();
     let text = `${now.toString()}|${currentUsage}/${initialTotalAmount}\n`;
-    let filename = `logs/${day}-${month}-${year}.txt`
+    let filename = `quota-logs/${day}-${month}-${year}.txt`
     fs.appendFileSync(filename, text, { flag: 'a+' });
 
     if(hour == 0) { // new day: append to summary file daily
-        let summaryFileName = `logs/summary.txt`;
+        let summaryFileName = `quota-logs/summary.txt`;
         fs.appendFileSync(summaryFileName, text, { flag: 'a+' });
     }
 }
