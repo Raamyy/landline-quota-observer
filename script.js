@@ -105,13 +105,14 @@ async function getCurrentUsage(jwt, customerId) {
     let usageResult = await axios.post(url, data, config);
 
     return {
-        currentUsage: usageResult.data.body.summarizedLineUsageList.find(u => u.summaryGroupName == "ADSL_USAGE_PREPAID").freeAmount,
+        freeUsage: usageResult.data.body.summarizedLineUsageList.find(u => u.summaryGroupName == "ADSL_USAGE_PREPAID").freeAmount,
         initialTotalAmount: usageResult.data.body.summarizedLineUsageList.find(u => u.summaryGroupName == "ADSL_USAGE_PREPAID").initialTotalAmount
     }
 }
 
 function getDateWithOffset(offset) {
     const currentMoment = moment().utcOffset(offset);
+    console.log("current moment", currentMoment);
     return currentMoment;
 }
 async function main() {
@@ -123,10 +124,10 @@ async function main() {
     }
     let annoynmousToken = await getAnnonymousToken();
     let { jwt, customerId } = await getWEToken(annoynmousToken);
-    let { currentUsage, initialTotalAmount } = await getCurrentUsage(jwt, customerId);
-    let now = getDateWithOffset(process.env.TIMEZONE == null ? 3: process.env.TIMEZONE);
+    let { freeUsage, initialTotalAmount } = await getCurrentUsage(jwt, customerId);
+    let now = getDateWithOffset(3);
     let day = now.date(), month = now.month(), year = now.year(), hour = now.hour();
-    let text = `${now.toString()}|${currentUsage}/${initialTotalAmount}\n`;
+    let text = `${now.toString()}|${freeUsage}/${initialTotalAmount}\n`;
     let filename = `quota-logs/${day}-${month}-${year}.txt`
     fs.appendFileSync(filename, text, { flag: 'a+' });
 
