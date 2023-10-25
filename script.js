@@ -131,7 +131,7 @@ async function main() {
     let filename = `quota-logs/${day}-${month}-${year}.txt`
     fs.appendFileSync(filename, text, { flag: 'a+' });
 
-    if(hour == 0) { // new day: append to summary file daily
+    if(hour == 0 || hour == 1) { // new day: append to summary file daily
         fs.appendFileSync("quota-logs/README.md", "## " + text, { flag: 'a+' });
     }
 }
