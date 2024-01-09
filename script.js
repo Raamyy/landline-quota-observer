@@ -1,6 +1,7 @@
 const axios = require('axios').default;
 const fs = require('fs')
 require('dotenv').config()
+const ChartJsImage = require('chartjs-to-image');
 const moment = require('moment');
 
 const landlinenumber = process.env.LANDLINE_NUMBER; // 02xxxxxxxx
@@ -64,7 +65,7 @@ async function getWEToken(jwt) {
         }
     }
     let tokenResult = await axios.post(url, data, config);
-    if(!tokenResult.data.body){
+    if (!tokenResult.data.body) {
         throw new Error("login failed, incorrect landline number or password");
     }
     // console.log(tokenResult);
@@ -116,11 +117,11 @@ function getDateWithOffset(offset) {
     return currentMoment;
 }
 async function main() {
-    if(!landlinenumber){
-        throw new Error("landline not provided");        
+    if (!landlinenumber) {
+        throw new Error("landline not provided");
     }
-    if(!password){
-        throw new Error("password not provided");        
+    if (!password) {
+        throw new Error("password not provided");
     }
     let annoynmousToken = await getAnnonymousToken();
     let { jwt, customerId } = await getWEToken(annoynmousToken);
@@ -131,9 +132,81 @@ async function main() {
     let filename = `quota-logs/${day}-${month}-${year}.txt`
     fs.appendFileSync(filename, text, { flag: 'a+' });
 
-    if(hour == 0 || hour == 1) { // new day: append to summary file daily
+    if (hour == 0 || hour == 1) { // new day: append to summary file daily
         fs.appendFileSync("quota-logs/README.md", "## " + text, { flag: 'a+' });
     }
+
+    generateChart("quota-logs/README.md");
+}
+
+function generateChart(dataFile) {
+    let file = fs.readFileSync(dataFile);
+
+    let fileContent = file.toString().split("\n");
+
+    let dates = [];
+    let dataset = [];
+
+    for (const line of fileContent) {
+        if (!line) continue;
+        let splt = line.split("|");
+        let date = new Date(splt[0].split("## "[1]));
+        let usage = splt[1].split("/")[0];
+        dates.push(date);
+        dataset.push(usage);
+    }
+
+    const data = {
+        labels: dates,
+        datasets: [{
+            label: 'Usage',
+            backgroundColor: "#228DAC",
+            borderColor: "#228DAC",
+            fill: false,
+            data: dataset,
+        }]
+    };
+
+    let chartConfig = {
+        type: 'line',
+        data: data,
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: 'Personal Landline Consumption'
+            },
+            scales: {
+                xAxes: [{
+                    type: 'time',
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Date'
+                    },
+                    ticks: {
+                        // show ticks every four days :)
+                        callback: function (val, index) {
+                            return index % 4 === 0 ? val : '';
+                        },
+                    }
+                }],
+                yAxes: [{
+                    type: 'linear',
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'value'
+                    }
+                }]
+            }
+        },
+    };
+
+    const myChart = new ChartJsImage();
+    myChart.setConfig(chartConfig);
+    myChart.setWidth(1400);
+    myChart.setWidth(800);
+
+    myChart.toFile('./chart.png');
 }
 
 main()
