@@ -1,7 +1,7 @@
 name: Run main sync script
 
 on:
-  # workflow_dispatch:
+  workflow_dispatch:
   schedule:
   - cron: "31 */2 * * *" # run every two hours
 
