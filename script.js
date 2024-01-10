@@ -134,9 +134,9 @@ async function main() {
 
     if (hour == 0 || hour == 1) { // new day: append to summary file daily
         fs.appendFileSync("quota-logs/README.md", "## " + text, { flag: 'a+' });
+        generateChart("quota-logs/README.md");
     }
 
-    generateChart("quota-logs/README.md");
 }
 
 function generateChart(dataFile) {
