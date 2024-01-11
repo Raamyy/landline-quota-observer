@@ -146,7 +146,9 @@ function generateChart(dataFile) {
 
     let dates = [];
     let dataset = [];
-
+    let delta = [];
+    
+    // get current quota for every day
     for (const line of fileContent) {
         if (!line) continue;
         let splt = line.split("|");
@@ -154,6 +156,16 @@ function generateChart(dataFile) {
         let usage = splt[1].split("/")[0];
         dates.push(date);
         dataset.push(usage);
+    }
+
+    // get delta usage for every day
+    for (let i = 0; i < dataset.length; i++) {
+        const usage = dataset[i];
+
+        if(!dataset[i+1])
+            delta.push(0);
+        else
+            delta.push(dataset[i + 1] - usage );
     }
 
     const data = {
@@ -164,6 +176,17 @@ function generateChart(dataFile) {
             borderColor: "#228DAC",
             fill: false,
             data: dataset,
+        }]
+    };
+
+    const deltaData = {
+        labels: dates,
+        datasets: [{
+            label: 'Delta',
+            backgroundColor: "#AC8D22",
+            borderColor: "#AC8D22",
+            fill: false,
+            data: delta,
         }]
     };
 
@@ -201,12 +224,56 @@ function generateChart(dataFile) {
         },
     };
 
+    let deltaChartConfig = {
+        type: 'line',
+        data: deltaData,
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: 'Personal Landline Consumption'
+            },
+            scales: {
+                xAxes: [{
+                    type: 'time',
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Date'
+                    },
+                    ticks: {
+                        // show ticks every four days :)
+                        // callback: function (val, index) {
+                        //     return index % 4 === 0 ? val : '';
+                        // },
+                    }
+                }],
+                yAxes: [{
+                    type: 'linear',
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'value'
+                    },
+                    ticks: {
+                        max: 50
+                    }
+                }]
+            }
+        },
+    };
+
     const myChart = new ChartJsImage();
     myChart.setConfig(chartConfig);
     myChart.setWidth(1400);
     myChart.setWidth(800);
 
     myChart.toFile('./chart.png');
+
+    const deltaChart = new ChartJsImage();
+    deltaChart.setConfig(deltaChartConfig);
+    deltaChart.setWidth(1400);
+    deltaChart.setWidth(800);
+    
+    deltaChart.toFile('./delta-chart.png');
 }
 
 main()
