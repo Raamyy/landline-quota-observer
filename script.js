@@ -28,6 +28,7 @@ async function getAnnonymousToken() {
         }
     }
     let tokenResult = await axios.get(url, config);
+    console.log(tokenResult.data);
     return tokenResult.data.body.jwt;
 }
 
