@@ -65,6 +65,7 @@ async function getWEToken(jwt) {
         }
     }
     let tokenResult = await axios.post(url, data, config);
+    console.log(tokenResult);
     if (!tokenResult.data.body) {
         throw new Error("login failed, incorrect landline number or password");
     }
